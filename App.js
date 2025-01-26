@@ -1,33 +1,69 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState, useEffect } from 'react';
+import { fetchMovies } from "./app/networking/http";
 
+const divIcon = require('./app/assets/div-logo-color-24x24.png');
 
-export default function App() {
+// Komponenta pro úvodní stránku
+const Div = () => <View><Text>Div.cz</Text></View>;
+
+// Komponenta pro filmy (MoviesList je součástí této záložky)
+function Filmy() {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadMovies() {
+      try {
+        const data = await fetchMovies();
+        setMovies(data);
+      } catch (error) {
+        console.error("Chyba při načítání filmů:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadMovies();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
-    <NavigationContainer>
-        <TabNavigator></TabNavigator>
-    </NavigationContainer>
+    <FlatList
+      data={movies}
+      keyExtractor={(item) => item.MovieID.toString()}
+      renderItem={({ item }) => (
+        <View style={styles.movieItem}>
+          <Image 
+            source={{ uri: `http://monitoring.ekultura.eu${item.IMGposter}` }} 
+            style={styles.poster} 
+          />
+          <Text style={styles.title}>{item.Title}</Text>
+          <Text style={styles.description}>{item.Description}</Text>
+        </View>
+      )}
+    />
   );
 }
 
-const divIcon = require('./app/assets/div-logo-color-24x24.png')
-const Div = () => <View><Text>Div.cz</Text></View>
-const Filmy = () => <View><Text>Filmy</Text></View>
-const Knihy = () => <View><Text>Knihy</Text></View>
-const Hry = () => <View><Text>Hry</Text></View>
+// Dummy komponenty pro knihy a hry
+const Knihy = () => <View><Text>Knihy</Text></View>;
+const Hry = () => <View><Text>Hry</Text></View>;
 
-const Tab = createBottomTabNavigator()
+// Vytvoření záložek (Tab.Navigator)
+const Tab = createBottomTabNavigator();
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
-        // Pro tab Div.cz použijeme vlastní obrázek
         if (route.name === 'Div.cz') {
           return (
             <Image 
@@ -40,8 +76,6 @@ const TabNavigator = () => (
             />
           );
         }
-
-        // Pro ostatní taby použijeme Ionicons
         let iconName;
         if (route.name === 'Filmy') {
           iconName = focused ? 'film' : 'film-outline';
@@ -50,7 +84,6 @@ const TabNavigator = () => (
         } else if (route.name === 'Hry') {
           iconName = focused ? 'game-controller' : 'game-controller-outline';
         }
-
         return <Ionicons name={iconName} size={size} color={color} />;
       },
     })}
@@ -60,13 +93,52 @@ const TabNavigator = () => (
     <Tab.Screen name="Knihy" component={Knihy} />
     <Tab.Screen name="Hry" component={Hry} />
   </Tab.Navigator>
-)
+);
+
+// Hlavní komponenta aplikace
+export default function App() {
+  return (
+    <NavigationContainer>
+      <SafeAreaView style={styles.container}>
+        <TabNavigator />
+      </SafeAreaView>
+    </NavigationContainer>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    padding: 16,
+  },
+  movieItem: {
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  poster: {
+    width: 200,
+    height: 300,
+    marginBottom: 12,
+    borderRadius: 8,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
   },
 });
