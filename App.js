@@ -8,10 +8,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { fetchMovies } from "./app/networking/http";
 
+import ItemCard from './app/components/ItemCard'
+
 const divIcon = require('./app/assets/div-logo-color-24x24.png');
 
-// Komponenta pro úvodní stránku
-const Div = () => <View><Text>Div.cz</Text></View>;
+const Div = () => <View><Text>Div - úvodní stránka</Text></View>
+const Knihy = () => <View><Text>Knihy</Text></View>
+function Hry() {
+  return (
+    <ItemCard />
+  )
+}
 
 // Komponenta pro filmy (MoviesList je součástí této záložky)
 function Filmy() {
@@ -53,10 +60,6 @@ function Filmy() {
     />
   );
 }
-
-// Dummy komponenty pro knihy a hry
-const Knihy = () => <View><Text>Knihy</Text></View>;
-const Hry = () => <View><Text>Hry</Text></View>;
 
 // Vytvoření záložek (Tab.Navigator)
 const Tab = createBottomTabNavigator();
@@ -110,7 +113,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 16,
   },
   movieItem: {
     marginBottom: 16,
