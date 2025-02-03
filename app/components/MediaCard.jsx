@@ -4,11 +4,11 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const { width } = Dimensions.get('window')
 
-const ItemCard = ({ title, year }) =>  {
+const MediaCard = ({ title, year, poster }) =>  {
     return (
         <View style={styles.container}>
             <Image 
-                source={{ uri: "https://image.tmdb.org/t/p/w300_and_h450_bestv2//huVnXS9Qg8G6rB68N5YXGIo6Mtz.jpg" }}
+                source={{ uri: poster }}
                 style={styles.image} 
                 
             />
@@ -44,4 +44,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ItemCard
+export default MediaCard

@@ -6,9 +6,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
-import { fetchMovies } from "./app/networking/http";
 
-import ItemCard from './app/components/ItemCard'
+import MediaCard from './app/components/MediaCard'
+import { topMoviesApi } from './app/services/mediaEndpoints';
 
 const divIcon = require('./app/assets/div-logo-color-24x24.png');
 
@@ -16,7 +16,11 @@ const Div = () => <View><Text>Div - úvodní stránka</Text></View>
 const Knihy = () => <View><Text>Knihy</Text></View>
 function Hry() {
   return (
-    <ItemCard />
+    <MediaCard 
+      title="V hlavě 2"
+      year="2024"
+
+    />
   )
 }
 
@@ -26,9 +30,9 @@ function Filmy() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadMovies() {
+    async function fetchMovieList() {
       try {
-        const data = await fetchMovies();
+        const data = await topMoviesApi.fetchMedia();
         setMovies(data.results);
       } catch (error) {
         console.error("Chyba při načítání filmů:", error);
@@ -36,7 +40,7 @@ function Filmy() {
         setLoading(false);
       }
     }
-    loadMovies();
+    fetchMovieList();
   }, []);
 
   if (loading) {
@@ -46,11 +50,12 @@ function Filmy() {
   return (
     <FlatList
       data={movies}
-      keyExtractor={(item) => item.movieid.toString()}
+      keyExtractor={(media) => media.indexid.toString()}
       renderItem={({ item }) => (
-        <ItemCard 
-          title={item.titlecz}
-          year={item.releaseyear}
+        <MediaCard 
+          poster={topMoviesApi.getImageUrl(item.img)}
+          title={item.title}
+          year={item.year}
         />
         /*{ <View style={styles.movieItem}>
           <Image 
