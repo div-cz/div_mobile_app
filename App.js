@@ -29,7 +29,7 @@ function Filmy() {
     async function loadMovies() {
       try {
         const data = await fetchMovies();
-        setMovies(data);
+        setMovies(data.results);
       } catch (error) {
         console.error("Chyba při načítání filmů:", error);
       } finally {
@@ -46,16 +46,20 @@ function Filmy() {
   return (
     <FlatList
       data={movies}
-      keyExtractor={(item) => item.MovieID.toString()}
+      keyExtractor={(item) => item.movieid.toString()}
       renderItem={({ item }) => (
-        <View style={styles.movieItem}>
+        <ItemCard 
+          title={item.titlecz}
+          year={item.releaseyear}
+        />
+        /*{ <View style={styles.movieItem}>
           <Image 
-            source={{ uri: `http://monitoring.ekultura.eu${item.IMGposter}` }} 
+            source={{ uri: `https://image.tmdb.org/t/p/w300_and_h450_bestv2//huVnXS9Qg8G6rB68N5YXGIo6Mtz.jpg` }} 
             style={styles.poster} 
           />
-          <Text style={styles.title}>{item.Title}</Text>
-          <Text style={styles.description}>{item.Description}</Text>
-        </View>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.description}>{item.releaseyear}</Text>
+        </View> }*/
       )}
     />
   );

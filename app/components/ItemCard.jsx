@@ -4,18 +4,18 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const { width } = Dimensions.get('window')
 
-const ItemCard = () =>  {
+const ItemCard = ({ title, year }) =>  {
     return (
         <View style={styles.container}>
             <Image 
-                source={require('../assets/v-hlave.jpeg')}
+                source={{ uri: "https://image.tmdb.org/t/p/w300_and_h450_bestv2//huVnXS9Qg8G6rB68N5YXGIo6Mtz.jpg" }}
                 style={styles.image} 
                 
             />
           <Text style={styles.title}>
-            V Hlavě 2
+            {title}
          </Text>
-         <Text style={styles.subtitle}>(2024)</Text>
+         <Text style={styles.subtitle}>{year}</Text>
         </View>
     )
 }
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        margin: 10
     },
     image: {
         width: width * 0.2,
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: RFValue(12), // Hodnota, která se přizpůsobí podle DPI
         color: 'gray',
-        textAlign: 'left', // Zarovnání textu doleva
     },
     title: {
         fontSize: RFPercentage(2), // 3 % výšky obrazovky
