@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { LinearGradient } from 'expo-linear-gradient';
 
 import MediaCard from './app/components/MediaCard'
 import { topMoviesApi } from './app/services/mediaEndpoints';
@@ -96,7 +95,6 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
-      header: () => <GradientHeader />,
       tabBarIcon: ({ focused, color, size }) => {
         if (route.name === 'Div.cz') {
           return (
