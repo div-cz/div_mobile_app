@@ -1,14 +1,18 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, Dimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { LinearGradient } from 'expo-linear-gradient';
 
 import MediaCard from './app/components/MediaCard'
 import { topMoviesApi } from './app/services/mediaEndpoints';
+
+const { width } = Dimensions.get('window')
 
 const divIcon = require('./app/assets/div-logo-color-24x24.png');
 
@@ -19,7 +23,7 @@ function Hry() {
     <MediaCard 
       title="V hlavě 2"
       year="2024"
-
+      rating="79"
     />
   )
 }
@@ -48,14 +52,22 @@ function Filmy() {
   }
 
   return (
+    <View>
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerText}>TOP Filmy</Text>
+    </View>
     <FlatList
+      horizontal
+      showsHorizontalScrollIndicator={false}
       data={movies}
       keyExtractor={(media) => media.indexid.toString()}
+      contentContainerStyle={styles.flatListContent}
       renderItem={({ item }) => (
         <MediaCard 
           poster={topMoviesApi.getImageUrl(item.img)}
           title={item.title}
-          year={item.year}
+          year={item.divrating}
+          rating={item.divrating}
         />
         /*{ <View style={styles.movieItem}>
           <Image 
@@ -67,14 +79,24 @@ function Filmy() {
         </View> }*/
       )}
     />
+    </View>
   );
 }
 
+const GradientHeader = () => (
+  <LinearGradient 
+    colors={['#340000', '#9e2a20']} 
+    style={{ flex: 1 }} 
+    start={{ x: 0, y: 0 }} 
+    end={{ x: 1, y: 0 }} 
+  />
+);
 // Vytvoření záložek (Tab.Navigator)
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
+      header: () => <GradientHeader />,
       tabBarIcon: ({ focused, color, size }) => {
         if (route.name === 'Div.cz') {
           return (
@@ -123,6 +145,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  flatListContent: {
+    top: 15,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    top: 10,
+    left: 10,
+  },
   movieItem: {
     marginBottom: 16,
     padding: 16,
@@ -152,4 +183,8 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'center',
   },
+  headerText: {
+    fontWeight: 'bold',
+    fontSize: RFPercentage(2.5),
+  }
 });
