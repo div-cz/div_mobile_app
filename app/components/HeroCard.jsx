@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
   },
   badge: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
     marginBottom: 8,
   },
   badgeText: {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   title: {
-    fontSize: 26,
+    fontSize: 20,
     fontWeight: '900',
     color: '#ffffff',
     letterSpacing: -0.5,
