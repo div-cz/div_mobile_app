@@ -7,6 +7,8 @@ const POSTER_WIDTH = SCREEN_WIDTH * 0.38;
 const POSTER_HEIGHT = POSTER_WIDTH * (3 / 2);
 const WIDE_WIDTH = SCREEN_WIDTH * 0.65;
 const WIDE_HEIGHT = WIDE_WIDTH * (9 / 16);
+const BADGE_SIZE = 44;
+const BADGE_OFFSET = 10;
 
 const getRatingColor = (rating) => {
   const r = parseFloat(rating);
@@ -19,23 +21,30 @@ const getRatingColor = (rating) => {
 const MediaCard = ({ title, year, poster, rating, wide }) => {
   const cardWidth = wide ? WIDE_WIDTH : POSTER_WIDTH;
   const cardHeight = wide ? WIDE_HEIGHT : POSTER_HEIGHT;
+  const radius = wide ? 16 : 14;
 
   return (
-    <View style={[styles.container, { width: cardWidth }]}>
-      <View style={[styles.imageWrap, { width: cardWidth, height: cardHeight, borderRadius: wide ? 16 : 14 }]}>
-        {poster ? (
-          <Image source={{ uri: poster }} style={styles.image} resizeMode="cover" />
-        ) : (
-          <View style={styles.imagePlaceholder} />
-        )}
+    <View style={[styles.container, { width: cardWidth + BADGE_OFFSET }]}>
+      <View style={[styles.imageWrap, { marginTop: BADGE_OFFSET, marginLeft: BADGE_OFFSET }]}>
+        {/* Vnitřní view s overflow hidden pouze pro borderRadius obrázku */}
+        <View style={[styles.imageClip, { width: cardWidth, height: cardHeight, borderRadius: radius }]}>
+          {poster ? (
+            <Image source={{ uri: poster }} style={styles.image} resizeMode="cover" />
+          ) : (
+            <View style={styles.imagePlaceholder} />
+          )}
+        </View>
+
+        {/* Badge přesahuje přes roh karty */}
         {rating != null && (
           <View style={[styles.ratingBadge, { borderColor: getRatingColor(rating) }]}>
             <Text style={styles.ratingText}>{`${rating}%`}</Text>
           </View>
         )}
       </View>
-      <Text style={styles.title} numberOfLines={2}>{title}</Text>
-      {year ? <Text style={styles.subtitle} numberOfLines={1}>{year}</Text> : null}
+
+      <Text style={[styles.title, { marginLeft: BADGE_OFFSET }]} numberOfLines={2}>{title}</Text>
+      {year ? <Text style={[styles.subtitle, { marginLeft: BADGE_OFFSET }]} numberOfLines={1}>{year}</Text> : null}
     </View>
   );
 };
@@ -45,9 +54,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   imageWrap: {
+    marginBottom: 8,
+  },
+  imageClip: {
     overflow: 'hidden',
     backgroundColor: colors.surfaceContainerHigh,
-    marginBottom: 8,
   },
   image: {
     width: '100%',
@@ -59,19 +70,19 @@ const styles = StyleSheet.create({
   },
   ratingBadge: {
     position: 'absolute',
-    left: -10,
-    top: -10,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1.5,
+    left: -BADGE_OFFSET,
+    top: -BADGE_OFFSET,
+    width: BADGE_SIZE,
+    height: BADGE_SIZE,
+    borderRadius: BADGE_SIZE / 2,
+    borderWidth: 2,
     backgroundColor: 'rgba(0,0,0,0.85)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   ratingText: {
     color: '#ffffff',
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   title: {

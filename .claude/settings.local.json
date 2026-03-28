@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx expo:*)"
+      "Bash(npx expo:*)",
+      "Bash(curl -s \"https://magic.div.cz/api/movie/?format=json&limit=10&offset=20\")"
     ]
   }
 }
