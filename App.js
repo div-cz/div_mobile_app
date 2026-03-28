@@ -1,136 +1,119 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
-import MediaCard from './app/components/MediaCard'
-import { topMoviesApi } from './app/services/mediaEndpoints';
-
-const { width } = Dimensions.get('window')
+import HomeScreen from './app/screens/HomeScreen';
+import ViceScreen from './app/screens/ViceScreen';
+import { colors } from './app/theme/colors';
 
 const divIcon = require('./app/assets/div-logo-color-24x24.png');
 
-const Div = () => <View><Text>Div - úvodní stránka</Text></View>
-const Knihy = () => <View><Text>Knihy</Text></View>
-function Hry() {
-  return (
-    <MediaCard 
-      title="V hlavě 2"
-      year="2024"
-      rating="79"
-    />
-  )
-}
-
-// Komponenta pro filmy (MoviesList je součástí této záložky)
-function Filmy() {
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchMovieList() {
-      try {
-        const data = await topMoviesApi.fetchMedia();
-        setMovies(data.results);
-      } catch (error) {
-        console.error("Chyba při načítání filmů:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMovieList();
-  }, []);
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
-  return (
-    <View>
-    <View style={styles.headerContainer}>
-      <Text style={styles.headerText}>TOP Filmy</Text>
-    </View>
-    <FlatList
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      data={movies}
-      keyExtractor={(media) => media.indexid.toString()}
-      contentContainerStyle={styles.flatListContent}
-      renderItem={({ item }) => (
-        <MediaCard 
-          poster={topMoviesApi.getImageUrl(item.img)}
-          title={item.title}
-          year={item.divrating}
-          rating={item.divrating}
-        />
-        /*{ <View style={styles.movieItem}>
-          <Image 
-            source={{ uri: `https://image.tmdb.org/t/p/w300_and_h450_bestv2//huVnXS9Qg8G6rB68N5YXGIo6Mtz.jpg` }} 
-            style={styles.poster} 
-          />
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.description}>{item.releaseyear}</Text>
-        </View> }*/
-      )}
-    />
-    </View>
-  );
-}
-
-const GradientHeader = () => (
-  <LinearGradient 
-    colors={['#340000', '#9e2a20']} 
-    style={{ flex: 1 }} 
-    start={{ x: 0, y: 0 }} 
-    end={{ x: 1, y: 0 }} 
-  />
+const HeaderLeft = () => (
+  <View style={styles.headerLeft}>
+    <Image source={divIcon} style={styles.headerLogo} />
+    <Text style={styles.headerTitle}>Div.cz</Text>
+  </View>
 );
-// Vytvoření záložek (Tab.Navigator)
+
+const HeaderRight = () => (
+  <View style={styles.headerRight}>
+    <TouchableOpacity style={styles.headerBtn} activeOpacity={0.7}>
+      <Ionicons name="search-outline" size={22} color="#ffffff" />
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.headerBtn} activeOpacity={0.7}>
+      <Ionicons name="person-circle-outline" size={24} color="#ffffff" />
+    </TouchableOpacity>
+  </View>
+);
+
+const Filmy = () => (
+  <View style={styles.placeholder}>
+    <Text style={styles.placeholderText}>Filmy</Text>
+  </View>
+);
+const Knihy = () => (
+  <View style={styles.placeholder}>
+    <Text style={styles.placeholderText}>Knihy</Text>
+  </View>
+);
+const Hry = () => (
+  <View style={styles.placeholder}>
+    <Text style={styles.placeholderText}>Hry</Text>
+  </View>
+);
+
 const Tab = createBottomTabNavigator();
+
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
+      headerStyle: {
+        backgroundColor: colors.surfaceContainerLow,
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+      },
+      headerLeft: () => <HeaderLeft />,
+      headerTitle: () => null,
+      headerRight: () => <HeaderRight />,
+      tabBarStyle: {
+        backgroundColor: colors.surface,
+        borderTopColor: 'rgba(255,255,255,0.06)',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        height: 70,
+        paddingBottom: 12,
+        paddingTop: 10,
+      },
+      tabBarActiveTintColor: colors.brand,
+      tabBarInactiveTintColor: 'rgba(255,255,255,0.35)',
+      tabBarLabelStyle: {
+        fontSize: 10,
+        fontWeight: '700',
+        letterSpacing: 0.8,
+        textTransform: 'uppercase',
+        marginTop: 2,
+      },
       tabBarIcon: ({ focused, color, size }) => {
-        if (route.name === 'Div.cz') {
+        if (route.name === 'Div') {
           return (
-            <Image 
-              source={divIcon}
-              style={{
-                width: size,
-                height: size,
-                opacity: focused ? 1 : 0.7
-              }}
-            />
+            <View style={[
+              styles.divTabIcon,
+              { backgroundColor: focused ? colors.surfaceContainerHigh : 'transparent' },
+            ]}>
+              <Image
+                source={divIcon}
+                style={{ width: size + 4, height: size + 4, opacity: focused ? 1 : 0.4 }}
+              />
+            </View>
           );
         }
-        let iconName;
-        if (route.name === 'Filmy') {
-          iconName = focused ? 'film' : 'film-outline';
-        } else if (route.name === 'Knihy') {
-          iconName = focused ? 'book' : 'book-outline';
-        } else if (route.name === 'Hry') {
-          iconName = focused ? 'game-controller' : 'game-controller-outline';
-        }
-        return <Ionicons name={iconName} size={size} color={color} />;
+        const icons = {
+          Filmy: focused ? 'film' : 'film-outline',
+          Knihy: focused ? 'library' : 'library-outline',
+          Hry: focused ? 'game-controller' : 'game-controller-outline',
+          Více: focused ? 'ellipsis-horizontal-circle' : 'ellipsis-horizontal-circle-outline',
+        };
+        return <Ionicons name={icons[route.name]} size={size} color={color} />;
       },
     })}
   >
-    <Tab.Screen name="Div.cz" component={Div} />
-    <Tab.Screen name="Filmy" component={Filmy} />
-    <Tab.Screen name="Knihy" component={Knihy} />
-    <Tab.Screen name="Hry" component={Hry} />
+    <Tab.Screen name="Filmy" component={Filmy} options={{ tabBarActiveTintColor: colors.primary }} />
+    <Tab.Screen name="Knihy" component={Knihy} options={{ tabBarActiveTintColor: colors.secondary }} />
+    <Tab.Screen name="Div" component={HomeScreen} options={{ tabBarActiveTintColor: colors.brand }} />
+    <Tab.Screen name="Hry" component={Hry} options={{ tabBarActiveTintColor: colors.tertiary }} />
+    <Tab.Screen name="Více" component={ViceScreen} options={{ tabBarActiveTintColor: colors.accent }} />
   </Tab.Navigator>
 );
 
-// Hlavní komponenta aplikace
 export default function App() {
   return (
     <NavigationContainer>
+      <StatusBar style="light" />
       <SafeAreaView style={styles.container}>
         <TabNavigator />
       </SafeAreaView>
@@ -141,48 +124,45 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surfaceContainerLow,
   },
-  flatListContent: {
-    top: 15,
-  },
-  headerContainer: {
+  headerLeft: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    top: 10,
-    left: 10,
+    alignItems: 'center',
+    gap: 8,
+    marginLeft: 16,
   },
-  movieItem: {
-    marginBottom: 16,
-    padding: 16,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    flexDirection: 'column',
+  headerLogo: {
+    width: 26,
+    height: 26,
+  },
+  headerTitle: {
+    color: '#ffffff',
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  headerBtn: {
+    padding: 8,
+  },
+  placeholder: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  poster: {
-    width: 200,
-    height: 300,
-    marginBottom: 12,
-    borderRadius: 8,
+  placeholderText: {
+    color: colors.onSurfaceVariant,
+    fontSize: 16,
+    fontWeight: '600',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
+  divTabIcon: {
+    borderRadius: 12,
+    padding: 4,
   },
-  description: {
-    fontSize: 14,
-    color: '#555',
-    textAlign: 'center',
-  },
-  headerText: {
-    fontWeight: 'bold',
-    fontSize: RFPercentage(2.5),
-  }
 });

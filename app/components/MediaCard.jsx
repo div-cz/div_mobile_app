@@ -1,99 +1,90 @@
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native'
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { colors } from '../theme/colors';
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const { width } = Dimensions.get('window')
+const POSTER_WIDTH = SCREEN_WIDTH * 0.38;
+const POSTER_HEIGHT = POSTER_WIDTH * (3 / 2);
+const WIDE_WIDTH = SCREEN_WIDTH * 0.65;
+const WIDE_HEIGHT = WIDE_WIDTH * (9 / 16);
 
-const getOverlayColor = (rating) => {
-    const ratingNumber = parseFloat(rating)
-    
-    if (ratingNumber < 30) {
-        return '#fe4500'  // červená 
-    } else if (ratingNumber < 50) {
-        return '#1e91ff'  // modrá 
-    } else if (ratingNumber < 80) {
-        return '#ffd700'  // žlutá
-    } else {
-        return '#00aa00'  // zelená 
-    }
-}
+const getRatingColor = (rating) => {
+  const r = parseFloat(rating);
+  if (r < 30) return '#fe4500';
+  if (r < 50) return '#1e91ff';
+  if (r < 80) return '#ffd700';
+  return '#00aa00';
+};
 
-const MediaCard = ({ title, year, poster, rating }) =>  {
-    return (
-        <View style={styles.container}>
-        <View style={styles.imageContainer}>
-            <Image 
-                // source={require("../assets/v-hlave.jpeg")}
-                source={{ uri: poster }}
-                style={styles.image} 
-                
-            />
-              <View style={[
-                styles.overlay, 
-                { borderColor: getOverlayColor(rating) } 
-                ]}>
-                    <Text style={styles.overlayText}>{`${rating}%`}</Text>
-                </View>
-          
-        </View>
-        <Text style={styles.title}>
-            {title}
-         </Text>
-         <Text style={styles.subtitle}>2024</Text>
-        </View>
-    )
-}
+const MediaCard = ({ title, year, poster, rating, wide }) => {
+  const cardWidth = wide ? WIDE_WIDTH : POSTER_WIDTH;
+  const cardHeight = wide ? WIDE_HEIGHT : POSTER_HEIGHT;
+
+  return (
+    <View style={[styles.container, { width: cardWidth }]}>
+      <View style={[styles.imageWrap, { width: cardWidth, height: cardHeight, borderRadius: wide ? 16 : 14 }]}>
+        {poster ? (
+          <Image source={{ uri: poster }} style={styles.image} resizeMode="cover" />
+        ) : (
+          <View style={styles.imagePlaceholder} />
+        )}
+        {rating != null && (
+          <View style={[styles.ratingBadge, { borderColor: getRatingColor(rating) }]}>
+            <Text style={styles.ratingText}>{`${rating}%`}</Text>
+          </View>
+        )}
+      </View>
+      <Text style={styles.title} numberOfLines={2}>{title}</Text>
+      {year ? <Text style={styles.subtitle} numberOfLines={1}>{year}</Text> : null}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: 10,
-        width: width * 0.3,
-        height: width * 0.8 * (9 / 16),
-        // backgroundColor: '#eeeeff'
-    },
-    imageContainer: {
-        position: 'relative',
-        width: width * 0.2, // stejná šířka jako obrázek
-        justifyContent: 'flex-start',
-        bottom: 5,
-    },
-    image: {
-        width: width * 0.2,
-        height: width * 0.52 * (9 / 16),
-        borderRadius: 8,
-    },
-    overlay: {
-        position: 'absolute',
-        left: -12,
-        top: -12,
-        backgroundColor: 'rgba(0, 0, 0, 0.9)', // Poloprůhledné černé pozadí
-        paddingHorizontal: 5,
-        paddingVertical: 5,
-        width: 36,  // pevná šířka
-        height: 36, // stejná jako šířka
-        borderRadius: 18, // polovina šířky/výšky
-        borderWidth: 1.5,
-        // Centrování textu v kruhu
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    overlayText: {
-        color: 'white',
-        fontSize: RFValue(8),
-        fontWeight: 'bold'
-    },
-    subtitle: {
-        fontSize: RFValue(10), // Hodnota, která se přizpůsobí podle DPI
-        color: 'gray',
-    },
-    title: {
-        fontSize: RFPercentage(1.5), // 3 % výšky obrazovky
-        // fontWeight: 'bold',
-        textAlign: 'left', 
-    }
-})
+  container: {
+    flexDirection: 'column',
+  },
+  imageWrap: {
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceContainerHigh,
+    marginBottom: 8,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  imagePlaceholder: {
+    flex: 1,
+    backgroundColor: colors.surfaceContainerHighest,
+  },
+  ratingBadge: {
+    position: 'absolute',
+    left: -10,
+    top: -10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ratingText: {
+    color: '#ffffff',
+    fontSize: 8,
+    fontWeight: 'bold',
+  },
+  title: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.onSurface,
+    lineHeight: 18,
+    marginBottom: 2,
+  },
+  subtitle: {
+    fontSize: 11,
+    color: colors.onSurfaceVariant,
+  },
+});
 
-export default MediaCard
+export default MediaCard;
