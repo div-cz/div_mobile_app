@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.85;
+const CARD_WIDTH = SCREEN_WIDTH;
 const CARD_HEIGHT = CARD_WIDTH * (9 / 16);
 
 const HeroCard = ({ image, badge, badgeColor, badgeTextColor, title, description }) => (
@@ -32,9 +32,7 @@ const HeroCard = ({ image, badge, badgeColor, badgeTextColor, title, description
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 24,
     overflow: 'hidden',
-    marginRight: 16,
   },
   imagePlaceholder: {
     backgroundColor: colors.surfaceContainerHigh,

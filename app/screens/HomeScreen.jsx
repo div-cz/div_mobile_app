@@ -63,13 +63,13 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             snapToAlignment="start"
             decelerationRate="fast"
-            snapToInterval={SCREEN_WIDTH * 0.85 + 16}
+            snapToInterval={SCREEN_WIDTH}
             contentContainerStyle={styles.heroList}
             renderItem={({ item }) => (
               <HeroCard
                 image={topMoviesApi.getImageUrl(item.img)}
                 badge="Doporučený film"
-                badgeColor={colors.primary + '33'}
+                badgeColor="rgba(0,0,0,0.6)"
                 badgeTextColor={colors.primary}
                 title={item.title}
                 description={item.originaltitle}
@@ -153,9 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  heroList: {
-    paddingHorizontal: 24,
-  },
+  heroList: {},
   section: {
     marginBottom: 32,
   },
